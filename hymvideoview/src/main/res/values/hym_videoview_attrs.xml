@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <declare-styleable name="HymMediaController">
+        <attr name="hv_scalable" format="boolean" />
+    </declare-styleable>
+
+
+    <declare-styleable name="HymVideoView">
+        <attr name="hv_fitXY" format="boolean" />
+        <attr name="hv_autoRotation" format="boolean" />
+    </declare-styleable>
+
+</resources>

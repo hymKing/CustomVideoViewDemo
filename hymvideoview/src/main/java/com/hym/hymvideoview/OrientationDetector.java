@@ -14,7 +14,7 @@
 * limitations under the License.
 */
 
-package com.hym.customvideoviewdemo.view;
+package com.hym.hymvideoview;
 
 import android.content.Context;
 import android.content.pm.ActivityInfo;
@@ -61,9 +61,9 @@ public class OrientationDetector {
                     if (currDirection != lastDirection) {
                         resetTime();
                         lastDirection = currDirection;
-                        /*if (BuildConfig.DEBUG) {
+                        if (BuildConfig.DEBUG) {
                             Log.d(TAG, String.format("方向改变, 开始计时, 当前是方向为%s", currDirection));
-                        }*/
+                        }
                     } else {
                         calcHoldingTime();
                         if (holdingTime > HOLDING_THRESHOLD) {

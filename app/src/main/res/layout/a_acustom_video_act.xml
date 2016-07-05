@@ -1,20 +1,37 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:navi="http://schemas.android.com/apk/res-auto"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical" >
 
-<LinearLayout android:layout_height="200dp"
-    android:layout_width="200dp"
-    android:orientation="vertical">
-    <com.hym.customvideoviewdemo.view.CustomVideoView
-        android:id="@+id/cvv_video"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent">
+    <FrameLayout
+        android:id="@+id/video_layout"
+        android:layout_width="fill_parent"
+        android:layout_height="200dp"
+        android:background="@android:color/black">
 
-    </com.hym.customvideoviewdemo.view.CustomVideoView>
-    </LinearLayout>
+        <com.hym.hymvideoview.HymVideoView
+            android:id="@+id/cvv_video"
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
+            android:layout_gravity="center"
+            app:hv_autoRotation="true"
+            app:hv_fitXY="false" />
+        <ImageView
+            android:id="@+id/pre_on_uv_img"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_centerInParent="true"
+            android:scaleType="fitXY" />
+
+        <com.hym.hymvideoview.HymMediaController
+            android:id="@+id/media_controller"
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
+            app:hv_scalable="true" />
+
+    </FrameLayout>
 
     <Button
         android:layout_width="wrap_content"
