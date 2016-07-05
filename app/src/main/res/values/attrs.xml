@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+
+
+    <!--视频播放组件添加-->
+    <declare-styleable name="ViewFlow">
+        <attr name="sidebuffer" format="integer" />
+    </declare-styleable>
+    <declare-styleable name="CircleFlowIndicator">
+        <attr name="activeColor" format="color" />
+        <attr name="inactiveColor" format="color" />
+        <attr name="radius" format="dimension" />
+        <attr name="fadeOut" format="integer" />
+        <attr name="inactiveType">
+            <flag name="stroke" value="0" />
+            <flag name="fill" value="1" />
+        </attr>
+        <attr name="activeType">
+            <flag name="stroke" value="0" />
+            <flag name="fill" value="1" />
+        </attr>
+    </declare-styleable>
+    <declare-styleable name="UniversalMediaController">
+        <attr name="uvv_scalable" format="boolean" />
+    </declare-styleable>
+
+
+    <declare-styleable name="UniversalVideoView">
+        <attr name="uvv_fitXY" format="boolean" />
+        <attr name="uvv_autoRotation" format="boolean" />
+    </declare-styleable>
+
+
+</resources>
