@@ -5,26 +5,32 @@ import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageView;
 
+import com.flyup.common.utils.UIUtils;
 import com.flyup.net.image.ImageLoader;
 import com.hym.customvideoviewdemo.view.CustomVideoView;
 import com.hym.hymvideoview.HymMediaController;
 import com.hym.hymvideoview.HymVideoView;
 
 
-public class SigleTestActivity extends Activity implements OnClickListener {
+public class SigleTestActivity extends Activity implements OnClickListener,HymVideoView.VideoViewCallback {
 	private HymVideoView cvv_video;
 	private Button btn_set_path;
 	private Button btn_set_err_path;
 	private HymMediaController mMediaController;
 	private ImageView preImg;
+	private View mVideoLayout;
+	private View mBottomLayout;
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.a_acustom_video_act);
+		mVideoLayout=findViewById(R.id.video_layout);
+		mBottomLayout=findViewById(R.id.ll_bottom);
 		cvv_video=(HymVideoView) findViewById(R.id.cvv_video);
 		cvv_video.setOnErrorListener(new MediaPlayer.OnErrorListener() {
 			@Override
@@ -39,6 +45,12 @@ public class SigleTestActivity extends Activity implements OnClickListener {
 				preImg.setVisibility(View.GONE);
 			}
 		});
+		cvv_video.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
+			@Override
+			public void onCompletion(MediaPlayer mp) {
+				preImg.setVisibility(View.VISIBLE);
+			}
+		});
 		preImg=(ImageView) findViewById(R.id.pre_on_uv_img);
 		mMediaController = (HymMediaController) findViewById(R.id.media_controller);
 		cvv_video.setMediaController(mMediaController);
@@ -46,6 +58,7 @@ public class SigleTestActivity extends Activity implements OnClickListener {
 		btn_set_path.setOnClickListener(this);
 		btn_set_err_path=(Button)findViewById(R.id.btn_set_err_path);
 		btn_set_err_path.setOnClickListener(this);
+		cvv_video.setVideoViewCallback(this);
 
 	}
 	//    http://www.boomq.com/apollo/video/2016/7/5/test19_7M.mp4
@@ -74,7 +87,24 @@ public class SigleTestActivity extends Activity implements OnClickListener {
 			break;
 		}
 	}
-
+	@Override
+	public void onScaleChange(boolean isFullscreen) {
+		if(isFullscreen){
+			//全屏显示
+			ViewGroup.LayoutParams layoutParams=mVideoLayout.getLayoutParams();
+			layoutParams.width=ViewGroup.LayoutParams.MATCH_PARENT;
+			layoutParams.height=ViewGroup.LayoutParams.MATCH_PARENT;
+			mVideoLayout.setLayoutParams(layoutParams);
+			mBottomLayout.setVisibility(View.GONE);
+		}else{
+			//非全屏显示
+			ViewGroup.LayoutParams layoutParams=mVideoLayout.getLayoutParams();
+			layoutParams.width=ViewGroup.LayoutParams.MATCH_PARENT;
+			layoutParams.height= UIUtils.dip2px(200);
+			mVideoLayout.setLayoutParams(layoutParams);
+			mBottomLayout.setVisibility(View.VISIBLE);
+		}
+	}
 	@Override
 	protected void onResume() {
 		super.onResume();
@@ -83,5 +113,25 @@ public class SigleTestActivity extends Activity implements OnClickListener {
 	@Override
 	protected void onPause() {
 		super.onPause();
+	}
+
+	@Override
+	public void onPause(MediaPlayer mediaPlayer) {
+
+	}
+
+	@Override
+	public void onStart(MediaPlayer mediaPlayer) {
+		preImg.setVisibility(View.GONE);
+	}
+
+	@Override
+	public void onBufferingStart(MediaPlayer mediaPlayer) {
+
+	}
+
+	@Override
+	public void onBufferingEnd(MediaPlayer mediaPlayer) {
+
 	}
 }

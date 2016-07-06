@@ -34,7 +34,9 @@
             </intent-filter>
         </activity>
         <activity android:name=".SigleTestActivity"
-            android:screenOrientation="portrait"/>
+            android:configChanges="orientation|keyboardHidden|screenSize"
+            android:screenOrientation="portrait"
+            />
 
     </application>
 
