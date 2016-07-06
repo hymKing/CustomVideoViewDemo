@@ -3,45 +3,56 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical" >
+    android:orientation="vertical">
 
-    <FrameLayout
+    <LinearLayout
         android:id="@+id/video_layout"
-        android:layout_width="fill_parent"
-        android:layout_height="200dp"
-        android:background="@android:color/black">
+        android:layout_width="match_parent"
+        android:layout_height="300dp"
+        android:layout_gravity="center"
+        android:background="@android:color/black"
+        >
 
-        <com.hym.hymvideoview.HymVideoView
+        <com.hym.hymvideoview.CustomVideoView
             android:id="@+id/cvv_video"
-            android:layout_width="fill_parent"
-            android:layout_height="fill_parent"
-            android:layout_gravity="center"
-            app:hv_autoRotation="true"
-            app:hv_fitXY="false" />
-        <ImageView
-            android:id="@+id/pre_on_uv_img"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_centerInParent="true"
-            android:scaleType="fitXY" />
+            android:layout_gravity="center"
+           />
 
-        <com.hym.hymvideoview.HymMediaController
-            android:id="@+id/media_controller"
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/ll_bottom"
+        android:orientation="vertical">
+
+        <Button
+            android:id="@+id/btn_set_path"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="设置播放路径" />
+
+        <Button
+            android:id="@+id/btn_set_err_path"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="设置错误播放路径" />
+        <FrameLayout
+            android:id="@+id/video_layout_2"
             android:layout_width="fill_parent"
-            android:layout_height="fill_parent"
-            app:hv_scalable="true" />
+            android:layout_height="200dp"
+            android:background="@android:color/black"
+            >
 
-    </FrameLayout>
+            <com.hym.hymvideoview.CustomVideoView
+                android:id="@+id/cvv_video_2"
+                android:layout_width="fill_parent"
+                android:layout_height="fill_parent"
+                android:layout_gravity="center"
+                />
 
-    <Button
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="设置播放路径"
-        android:id="@+id/btn_set_path" />
-
-    <Button
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="设置错误播放路径"
-        android:id="@+id/btn_set_err_path" />
+        </FrameLayout>
+    </LinearLayout>
 </LinearLayout>

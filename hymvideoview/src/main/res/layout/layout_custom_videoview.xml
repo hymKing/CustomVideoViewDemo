@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/id_video_layout"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#343567">
+
+    <com.hym.hymvideoview.HymVideoView
+        android:id="@+id/hv_video"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:layout_gravity="center"
+        app:hv_autoRotation="false"
+        />
+
+    <ImageView
+        android:id="@+id/hv_pre_img"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_centerInParent="true"
+        android:scaleType="fitXY" />
+    <ProgressBar
+        android:id="@+id/pb_play"
+        style="@style/st_pro_horizontal_goddessvideo"
+        android:layout_width="match_parent"
+        android:layout_height="5dp"
+        android:layout_alignParentBottom="true"
+        android:layout_marginBottom="5dp"
+        android:visibility="gone" />
+    <com.hym.hymvideoview.HymMediaController
+        android:id="@+id/media_controller"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        app:hv_scalable="false" />
+
+</FrameLayout>
