@@ -484,6 +484,11 @@ public class HymVideoView extends SurfaceView implements  HymMediaController.Med
                     return handled;
                 }
             };
+
+    public int getmCurrentState() {
+        return mCurrentState;
+    }
+
     private MediaPlayer.OnErrorListener mErrorListener =
             new MediaPlayer.OnErrorListener() {
                 public boolean onError(MediaPlayer mp, int framework_err, int impl_err) {
@@ -674,8 +679,13 @@ public class HymVideoView extends SurfaceView implements  HymMediaController.Med
 
     @Override
     public void start() {
+        if(getmCurrentState()==STATE_ERROR&&mUri!=null){
+            setVideoURI(mUri);
+        }
         if (!mPreparedBeforeStart && mMediaController != null) {
             mMediaController.showLoading();
+        }else{
+            mMediaController.hideComplete();
         }
         if (isInPlaybackState()) {
             mMediaPlayer.start();

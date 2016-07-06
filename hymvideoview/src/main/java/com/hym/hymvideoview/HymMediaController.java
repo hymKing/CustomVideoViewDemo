@@ -124,6 +124,12 @@ public class HymMediaController extends FrameLayout {
         mControlLayout = v.findViewById(R.id.control_layout);
         loadingLayout = (ViewGroup) v.findViewById(R.id.loading_layout);
         errorLayout = (ViewGroup) v.findViewById(R.id.error_layout);
+        errorLayout.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mPlayer.start();
+            }
+        });
         mTurnButton = (ImageButton) v.findViewById(R.id.turn_button);
         mScaleButton = (ImageButton) v.findViewById(R.id.scale_button);
         mCenterPlayButton = v.findViewById(R.id.center_play_btn);
@@ -230,9 +236,9 @@ public class HymMediaController extends FrameLayout {
         if (mControlLayout.getVisibility() != VISIBLE) {
             mControlLayout.setVisibility(VISIBLE);
         }
-        if(mCenterPlayButton.getVisibility()!=VISIBLE){
-            mCenterPlayButton.setVisibility(VISIBLE);
-        }
+//        if(mCenterPlayButton.getVisibility()!=VISIBLE){
+//            mCenterPlayButton.setVisibility(VISIBLE);
+//        }
 
         // cause the progress bar to be updated even if mShowing
         // was already true. This happens, for example, if we're
@@ -256,7 +262,7 @@ public class HymMediaController extends FrameLayout {
             mHandler.removeMessages(SHOW_PROGRESS);
             mTitleLayout.setVisibility(GONE);
             mControlLayout.setVisibility(GONE);
-            mCenterPlayButton.setVisibility(View.GONE);
+            //mCenterPlayButton.setVisibility(View.GONE);
             mShowing = false;
         }
     }
@@ -282,18 +288,20 @@ public class HymMediaController extends FrameLayout {
                     showCenterView(R.id.loading_layout);
                     break;
                 case SHOW_COMPLETE: //7
+                    ((ImageView)mCenterPlayButton).setImageResource(R.mipmap.hv_itv_replay);
                     showCenterView(R.id.center_play_btn);
                     break;
                 case SHOW_ERROR: //5
-                    show();
+                    show(0);
                     showCenterView(R.id.error_layout);
                     break;
                 case HIDE_LOADING: //4
                 case HIDE_ERROR: //6
-                case HIDE_COMPLETE: //8
                     hide();
-                    hideCenterView();
+                    showCenterView(R.id.center_play_btn);
                     break;
+                case HIDE_COMPLETE: //8
+                    hideCenterView();
             }
         }
     };
@@ -518,26 +526,33 @@ public class HymMediaController extends FrameLayout {
         }
     };
 
-    private View.OnClickListener mCenterPlayListener = new View.OnClickListener() {
+    public View.OnClickListener mCenterPlayListener = new View.OnClickListener() {
         public void onClick(View v) {
+            if(mPlayer==null){
+                return;
+            }
             hideCenterView();
             if(mPlayer.isPlaying()){
                 ((ImageView)mCenterPlayButton).setImageResource(R.mipmap.hv_itv_player_play);
                 mPlayer.pause();
                 mCenterPlayButton.setVisibility(View.VISIBLE);
+                updatePausePlay();
                 return;
             }
             mPlayer.start();
             ((ImageView)mCenterPlayButton).setImageResource(R.mipmap.hv_stop_btn);
+            updatePausePlay();
         }
     };
 
     private void updatePausePlay() {
         if (mPlayer != null && mPlayer.isPlaying()) {
             mTurnButton.setImageResource(R.mipmap.hv_stop_btn);
+            ((ImageView)mCenterPlayButton).setImageResource(R.mipmap.hv_stop_btn);
 //            mCenterPlayButton.setVisibility(GONE);
         } else {
             mTurnButton.setImageResource(R.mipmap.hv_player_player_btn);
+            ((ImageView)mCenterPlayButton).setImageResource(R.mipmap.hv_player_player_btn);
 //            mCenterPlayButton.setVisibility(VISIBLE);
         }
     }

@@ -11,5 +11,8 @@
         <item name="android:indeterminateDrawable">@drawable/hv_progress_rotate</item>
         <item name="android:indeterminateDuration">1000</item>
     </style>
+    <style name="st_pro_horizontal_goddessvideo" parent="@android:style/Widget.ProgressBar.Horizontal">
+        <item name="android:progressDrawable">@drawable/hv_video_progressbar</item>
+    </style>
 
 </resources>
