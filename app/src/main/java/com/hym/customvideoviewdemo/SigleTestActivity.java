@@ -112,13 +112,13 @@ public class SigleTestActivity extends Activity implements OnClickListener,Custo
 	@Override
 	protected void onPause() {
 		super.onPause();
-		//cvv_video.onActivityOnPause();
+		cvv_video.onActivityOnPause();
 	}
 
 	@Override
 	protected void onRestart() {
 		super.onRestart();
-		//cvv_video.onActivityOnRestart();
+		cvv_video.onActivityOnRestart();
 	}
 
 

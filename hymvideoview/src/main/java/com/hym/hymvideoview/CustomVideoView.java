@@ -149,7 +149,7 @@ public class CustomVideoView extends LinearLayout implements  HymVideoView.Video
                 setPbProgressVisibility(View.GONE);
                 if (debug)
                     Log.e("VideoTest", "setOnCompletionListener");
-                preHvImg.setVisibility(View.GONE);
+                preHvImg.setVisibility(VISIBLE);
             }
         });
         hvVideo.setOnErrorListener(new MediaPlayer.OnErrorListener() {
@@ -172,6 +172,7 @@ public class CustomVideoView extends LinearLayout implements  HymVideoView.Video
      */
     public void onActivityOnPause() {
         mCurrentPosition = hvVideo.getCurrentPosition();
+        setPreImgVisibility(VISIBLE);
     }
 
     /**
