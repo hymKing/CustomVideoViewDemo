@@ -2,6 +2,7 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
+      <module fileurl="file://$PROJECT_DIR$/CustomVideoViewDemo.iml" filepath="$PROJECT_DIR$/CustomVideoViewDemo.iml" />
       <module fileurl="file://$PROJECT_DIR$/HymVideoView.iml" filepath="$PROJECT_DIR$/HymVideoView.iml" />
       <module fileurl="file://$PROJECT_DIR$/Library/Library.iml" filepath="$PROJECT_DIR$/Library/Library.iml" />
       <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />

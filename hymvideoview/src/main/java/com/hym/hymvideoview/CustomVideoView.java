@@ -17,6 +17,7 @@ import android.widget.Toast;
 import com.flyup.download.DownloadInfo;
 import com.flyup.download.DownloadManager;
 import com.flyup.download.DownloadState;
+import com.flyup.net.HttpUtil;
 import com.flyup.net.image.ImageLoader;
 
 /**
@@ -172,13 +173,14 @@ public class CustomVideoView extends LinearLayout implements  HymVideoView.Video
      */
     public void onActivityOnPause() {
         mCurrentPosition = hvVideo.getCurrentPosition();
-        setPreImgVisibility(VISIBLE);
+
     }
 
     /**
      * activity的onRestart方法中调用，恢复视频之前的播放状态
      */
     public void onActivityOnRestart() {
+        setPreImgVisibility(VISIBLE);
         try {
             if (hvVideo != null) {
                 if (mCurrentPosition != 0) {
@@ -190,6 +192,10 @@ public class CustomVideoView extends LinearLayout implements  HymVideoView.Video
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+
+    public void showCenterLoading(){
+        mMediaController.showLoading();
     }
 
     /**
@@ -291,7 +297,11 @@ public class CustomVideoView extends LinearLayout implements  HymVideoView.Video
     /**
      * 视频开始
      */
-    public void start() {
+    public void start(Boolean ensureNetType) {
+        //添加wifi网络判断
+        if(ensureNetType&&!"wifi".equals(HttpUtil.getNetworkType(mContext))){
+            return;
+        }
         hvVideo.start();
     }
 

@@ -267,6 +267,7 @@ public class HymMediaController extends FrameLayout {
       mControlLayout.setVisibility(GONE);
       if(mPlayer!=null&&mPlayer.isPlaying())
         hideCenterView();
+
       mShowing = false;
     }
   }

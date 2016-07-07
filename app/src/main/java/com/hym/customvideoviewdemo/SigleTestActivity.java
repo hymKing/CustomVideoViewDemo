@@ -59,10 +59,11 @@ public class SigleTestActivity extends Activity implements OnClickListener,Custo
 				cvv_video.setVideoFirstFrame(firstFramePath);
 				cvv_video.setTag(testUrl);
 				cvv_video.setVideoPath(cvv_video.getTag().toString());
+				cvv_video.start(true);
 
 				break;
 			case R.id.btn_set_err_path:
-				cvv_video.start();
+				cvv_video.start(false);
 //				customVideoView.setVideoPathAndFirstFrame(testUrl,firstFramePath);
 //				customVideoView.start();
 
