@@ -8,7 +8,7 @@
     <LinearLayout
         android:id="@+id/video_layout"
         android:layout_width="match_parent"
-        android:layout_height="300dp"
+        android:layout_height="400dp"
         android:layout_gravity="center"
         android:background="@android:color/black"
         >
@@ -39,20 +39,5 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="设置错误播放路径" />
-        <FrameLayout
-            android:id="@+id/video_layout_2"
-            android:layout_width="fill_parent"
-            android:layout_height="200dp"
-            android:background="@android:color/black"
-            >
-
-            <com.hym.hymvideoview.CustomVideoView
-                android:id="@+id/cvv_video_2"
-                android:layout_width="fill_parent"
-                android:layout_height="fill_parent"
-                android:layout_gravity="center"
-                />
-
-        </FrameLayout>
     </LinearLayout>
 </LinearLayout>

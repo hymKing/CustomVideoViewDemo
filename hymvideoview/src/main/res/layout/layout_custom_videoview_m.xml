@@ -4,7 +4,7 @@
     android:id="@+id/id_video_layout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#343567">
+    android:background="@color/hv_black">
 
     <com.hym.hymvideoview.HymVideoView
         android:id="@+id/hv_video"
@@ -18,16 +18,17 @@
         android:id="@+id/hv_pre_img"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_centerInParent="true"
-        android:scaleType="fitXY" />
+        android:layout_gravity="center"
+        android:scaleType="fitXY"
+         />
     <ProgressBar
         android:id="@+id/pb_play"
         style="@style/st_pro_horizontal_goddessvideo"
         android:layout_width="match_parent"
         android:layout_height="5dp"
-        android:layout_alignParentBottom="true"
-        android:layout_marginBottom="5dp"
-        android:visibility="gone" />
+       android:layout_gravity="bottom"
+        android:layout_marginBottom="0dp"
+        android:visibility="visible" />
     <com.hym.hymvideoview.HymMediaController
         android:id="@+id/media_controller"
         android:layout_width="fill_parent"

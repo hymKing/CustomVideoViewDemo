@@ -29,7 +29,7 @@ import com.flyup.net.image.ImageLoader;
  * <p/>
  * Created by Hym on 2016/5/3 20:11.
  * <br>Modified by zlx 2016/5/20
- * <br>Modification：imgbtnPlay pbplay方法暴露  修改 R.layout.layout_custom_videoview 布局
+ * <br>Modification：imgbtnPlay pbplay方法暴露  修改 R.layout.layout_custom_videoview_m 布局
  * <p/>
  * Created by Hym on 2016/05/27
  * 视频组件待完善的功能：
@@ -57,8 +57,7 @@ import com.flyup.net.image.ImageLoader;
  * <p/>
  *
  */
-//TODO:暴露播放暂停的回调
-//TODO:添加进度条的显示和隐藏
+//TODO:需要修复根据网络状况，是否自动缓冲
 
 
 public class CustomVideoView extends LinearLayout implements  HymVideoView.VideoViewCallback{
@@ -67,6 +66,7 @@ public class CustomVideoView extends LinearLayout implements  HymVideoView.Video
     HymVideoView hvVideo;
     ImageView preHvImg;
     ProgressBar pbplay;
+    ImageView errImgBg;
     HymMediaController mMediaController;
     int currentTime = 0;
     /**视频播放源的路径*/
@@ -109,12 +109,13 @@ public class CustomVideoView extends LinearLayout implements  HymVideoView.Video
     }
 
     private void init(Context context) {
-        LayoutInflater.from(context).inflate(R.layout.layout_custom_videoview, this, true);
+        LayoutInflater.from(context).inflate(R.layout.layout_custom_videoview_m, this, true);
         mContext = context;
         hvVideo = (HymVideoView) findViewById(R.id.hv_video);
         preHvImg = (ImageView) findViewById(R.id.hv_pre_img);
         pbplay = (ProgressBar) findViewById(R.id.pb_play);
         mMediaController = (HymMediaController) findViewById(R.id.media_controller);
+        errImgBg=(ImageView) mMediaController.findViewById(R.id.error_img_bg);
         hvVideo.setMediaController(mMediaController);
         initCVV();
     }
@@ -246,7 +247,8 @@ public class CustomVideoView extends LinearLayout implements  HymVideoView.Video
      */
     public void setVideoFirstFrame(String firstFrameUrl) {
         if (!TextUtils.isEmpty(firstFrameUrl)) {
-            ImageLoader.load(preHvImg, firstFrameUrl,0, R.mipmap.ic_launcher,true);
+            ImageLoader.load(preHvImg, firstFrameUrl);
+            ImageLoader.load(errImgBg,firstFrameUrl);
         }
 
     }
@@ -396,6 +398,8 @@ public class CustomVideoView extends LinearLayout implements  HymVideoView.Video
 
     @Override
     public void onStart(MediaPlayer mediaPlayer) {
+        setPbProgressVisibility(View.VISIBLE);
+        handler.postDelayed(runnable, 0);
         setPreImgVisibility(View.GONE);
         if(mExtendVideoViewCallBack!=null){
             mExtendVideoViewCallBack.onStart(mediaPlayer);

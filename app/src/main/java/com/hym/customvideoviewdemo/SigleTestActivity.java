@@ -1,6 +1,7 @@
 package com.hym.customvideoviewdemo;
 
 import android.app.Activity;
+import android.graphics.PixelFormat;
 import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.view.View;
@@ -30,7 +31,9 @@ public class SigleTestActivity extends Activity implements OnClickListener,Custo
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+		getWindow().setFormat(PixelFormat.TRANSLUCENT);//解决sufaceView闪烁的问题
 		setContentView(R.layout.a_acustom_video_act);
+
 		mVideoLayout=findViewById(R.id.video_layout);
 		mBottomLayout=findViewById(R.id.ll_bottom);
 		cvv_video=(CustomVideoView) findViewById(R.id.cvv_video);
@@ -39,7 +42,14 @@ public class SigleTestActivity extends Activity implements OnClickListener,Custo
 		btn_set_err_path=(Button)findViewById(R.id.btn_set_err_path);
 		btn_set_err_path.setOnClickListener(this);
 		cvv_video.setOnExtendVideoViewCallBack(this);
-		customVideoView=(CustomVideoView)findViewById(R.id.cvv_video_2);
+		//customVideoView=(CustomVideoView)findViewById(R.id.cvv_video_2);
+		cvv_video.setVideoFirstFrame(firstFramePath);
+		cvv_video.setTag(testUrl);
+		cvv_video.setVideoPath(cvv_video.getTag().toString());
+		//cvv_video.start(true);
+//		cvv_video.setTag(localPath);
+//		cvv_video.setVideoPath(cvv_video.getTag().toString());
+//		cvv_video.start(true);
 
 	}
 	//    http://www.boomq.com/apollo/video/2016/7/5/test19_7M.mp4
@@ -51,6 +61,7 @@ public class SigleTestActivity extends Activity implements OnClickListener,Custo
 	String vedioPath="http://www.boomq.com/apollo/video/2016/5/27/310d8194db424342a0a2fed472929d4a.mp4";
 	String vedioPath2="http://qiubeiai.com//resources/vedio/template/01.mp4";
 	String errorPath="http://www.boomq.com/apollo/video/2016/5/27/310d8194db424342a0a2fed472929d4a.mp";
+	String localPath="/storage/emulated/0/Android/data/com.duanqu.qupai.juepei/files/mounted/qupaiVideo//2016-07-07-17-33-17-416.mp4";
 	int count=0;
 	@Override
 	public void onClick(View v) {
@@ -63,7 +74,9 @@ public class SigleTestActivity extends Activity implements OnClickListener,Custo
 
 				break;
 			case R.id.btn_set_err_path:
-				cvv_video.start(false);
+				cvv_video.setVideoPath(cvv_video.getTag().toString());
+				cvv_video.start(true);
+				//cvv_video.start(false);
 //				customVideoView.setVideoPathAndFirstFrame(testUrl,firstFramePath);
 //				customVideoView.start();
 

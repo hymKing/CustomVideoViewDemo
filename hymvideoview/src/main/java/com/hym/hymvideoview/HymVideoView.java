@@ -699,6 +699,7 @@ public class HymVideoView extends SurfaceView implements  HymMediaController.Med
         if (isInPlaybackState()) {
             mMediaPlayer.start();
             mCurrentState = STATE_PLAYING;
+            mMediaController.hideComplete();
             if (this.videoViewCallback != null) {
                 this.videoViewCallback.onStart(mMediaPlayer);
             }
