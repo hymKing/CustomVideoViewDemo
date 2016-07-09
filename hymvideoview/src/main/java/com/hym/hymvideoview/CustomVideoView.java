@@ -131,15 +131,15 @@ public class CustomVideoView extends LinearLayout implements  HymVideoView.Video
         hvVideo.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
             @Override
             public void onPrepared(MediaPlayer mediaPlayer) {
-                final int currentPosition = hvVideo.getDuration();
+                final int maxPosition = hvVideo.getDuration();
                 if (pbplay != null) {
-                    pbplay.setMax(currentPosition);
+                    pbplay.setMax(maxPosition);
                 }
                 currentTime=0;
                 setPbProgressVisibility(View.GONE);
                 preparedFlag = true;
                 if (debug)
-                    Log.e("VideoTest", "onPrapare");
+                    Log.e("VideoTest", "onPrapared:maxPosition"+maxPosition);
             }
         });
         hvVideo.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
@@ -150,7 +150,7 @@ public class CustomVideoView extends LinearLayout implements  HymVideoView.Video
                 currentTime = 0;
                 setPbProgressVisibility(View.GONE);
                 if (debug)
-                    Log.e("VideoTest", "setOnCompletionListener");
+                    Log.e("VideoTest", "onCompleted:position"+hvVideo.getCurrentPosition());
                 preHvImg.setVisibility(VISIBLE);
             }
         });
@@ -173,8 +173,10 @@ public class CustomVideoView extends LinearLayout implements  HymVideoView.Video
      * activity的 onPause方法中调用，保存当前视频播放的状态
      */
     public void onActivityOnPause() {
-        mCurrentPosition = hvVideo.getCurrentPosition();
-
+        mCurrentPosition =hvVideo.getmCurrentState()== HymVideoView.STATE_PLAYBACK_COMPLETED
+                ?hvVideo.getDuration():hvVideo.getCurrentPosition();
+        if (debug)
+        Log.e("VideoTest", "onActivityOnPause:position"+mCurrentPosition);
     }
 
     /**
@@ -184,7 +186,7 @@ public class CustomVideoView extends LinearLayout implements  HymVideoView.Video
         setPreImgVisibility(VISIBLE);
         try {
             if (hvVideo != null) {
-                if (mCurrentPosition != 0) {
+                if (mCurrentPosition != 0&&mCurrentPosition!=hvVideo.getDuration()) {
                     hvVideo.seekTo(mCurrentPosition);
                     hvVideo.start();
                     mCurrentPosition = 0;
@@ -223,10 +225,20 @@ public class CustomVideoView extends LinearLayout implements  HymVideoView.Video
 
 
     /**
+     * 设置底部独立进度条的显示状态的前置条件
+     * @param pbDisplayPreSetting
+     */
+    public void setPbDisplayPreSetting(boolean pbDisplayPreSetting) {
+        this.pbDisplayPreSetting = pbDisplayPreSetting;
+    }
+
+    private boolean pbDisplayPreSetting=false;
+    /**
      * 设置进度条的显示和隐藏
      * @param visibility
      */
     public void setPbProgressVisibility(int visibility){
+        if(pbDisplayPreSetting)
         pbplay.setVisibility(visibility);
     }
 

@@ -73,6 +73,7 @@ public class HymMediaController extends FrameLayout {
     private static final int SHOW_PROGRESS = 2;
     private static final int SHOW_LOADING = 3;
     private static final int HIDE_LOADING = 4;
+    private static final int HIDE_LOADING_SHOW_PLAY=9;
     private static final int SHOW_ERROR = 5;
     private static final int HIDE_ERROR = 6;
     private static final int SHOW_COMPLETE = 7;
@@ -312,10 +313,17 @@ public class HymMediaController extends FrameLayout {
                     show(0);
                     showCenterView(R.id.error_layout);
                     break;
-                case HIDE_LOADING: //4
+                case HIDE_LOADING: //4 缓冲完成进入播放状态的时候调用
                     hide();
-                    LogUtil.e("videoTest_center_HIDE_COMPLETE:", "do hide center view");
+                    LogUtil.e("videoTest_center_HIDE_LOADING:", "do hide center view");
+                    setCenterPlayBtnImgSourceAndTag(R.mipmap.hv_stop_btn);
+                    lastCenterShowID=R.id.center_play_btn;
                     hideCenterView();
+                    break;
+                case HIDE_LOADING_SHOW_PLAY://9
+                    hide();
+                    LogUtil.e("videoTest_center_HIDE_LOADING_SHOW_PLAY:", "do hide center view");
+                    showCenterView(R.id.center_play_btn);
                     break;
                 case HIDE_ERROR: //6
                     hide();
@@ -389,7 +397,7 @@ public class HymMediaController extends FrameLayout {
         mProgress.setProgress(0);
         mTurnButton.setImageResource(R.mipmap.hv_player_player_btn);
         setVisibility(View.VISIBLE);
-        hideLoading();
+        hideLoadingShowPlay();
     }
 
     private String stringForTime(int timeMs) {
@@ -697,6 +705,9 @@ public class HymMediaController extends FrameLayout {
 
     public void hideLoading() {
         mHandler.sendEmptyMessage(HIDE_LOADING);
+    }
+    public void hideLoadingShowPlay() {
+        mHandler.sendEmptyMessage(HIDE_LOADING_SHOW_PLAY);
     }
 
     public void showError() {

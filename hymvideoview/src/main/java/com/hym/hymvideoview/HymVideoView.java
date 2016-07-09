@@ -42,19 +42,19 @@ public class HymVideoView extends SurfaceView implements  HymMediaController.Med
     private Uri mUri;
     //根据原生MediaPlayer的生命周期状态图，定义出如下可能的所有的生命周期状态值
     /**Error状态，视频资源异常等错误情况出现时，产生*/
-    private static final int STATE_ERROR              =-1;
+    public static final int STATE_ERROR              =-1;
     /**Idle状态，空闲状态，组件刚初始化时候的状态*/
-    private static final int STATE_IDLE               = 0;
+    public static final int STATE_IDLE               = 0;
     /**Preparing状态，调用了prepare()or prepareAsyc()方法后到prepared状态之间的状态*/
-    private static final int STATE_PREPARING          = 1;
+    public static final int STATE_PREPARING          = 1;
     /**调用了prepare() or prepareAsyc(),并完成准备（包括缓冲区的准备）的状态。*/
-    private static final int STATE_PREPARED           = 2;
+    public static final int STATE_PREPARED           = 2;
     /**调用了start()方法后，正常播放的状态*/
-    private static final int STATE_PLAYING            = 3;
+    public static final int STATE_PLAYING            = 3;
     /**调用了pause()方法后，进入暂停状态*/
-    private static final int STATE_PAUSED             = 4;
+    public static final int STATE_PAUSED             = 4;
     /**调用了start()方法后，视频播放完成进入状态*/
-    private static final int STATE_PLAYBACK_COMPLETED = 5;
+    public static final int STATE_PLAYBACK_COMPLETED = 5;
     /**当前状态*/
     private int mCurrentState = STATE_IDLE;
     /**目标状态，下一个要进入的状态*/
@@ -394,7 +394,8 @@ public class HymVideoView extends SurfaceView implements  HymMediaController.Med
 
             mPreparedBeforeStart = true;
             if (mMediaController != null) {
-                mMediaController.hideLoading();
+                //mMediaController.hideLoading();
+                mMediaController.hideLoadingShowPlay();
             }
 
             if (mOnPreparedListener != null) {
@@ -699,11 +700,12 @@ public class HymVideoView extends SurfaceView implements  HymMediaController.Med
         if (isInPlaybackState()) {
             mMediaPlayer.start();
             mCurrentState = STATE_PLAYING;
-            mMediaController.hideComplete();
             if (this.videoViewCallback != null) {
                 this.videoViewCallback.onStart(mMediaPlayer);
             }
         }
+        //准备完成后，如果调用了之前调用了start方法，则在此状态，此时在onPrepared的回调中
+        //有判断，如果是STATE_PLAYING状态，会主动再次调用Start方法
         mTargetState = STATE_PLAYING;
     }
 

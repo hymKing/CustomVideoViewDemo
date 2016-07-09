@@ -28,7 +28,7 @@
         android:layout_height="5dp"
        android:layout_gravity="bottom"
         android:layout_marginBottom="0dp"
-        android:visibility="visible" />
+        android:visibility="gone" />
     <com.hym.hymvideoview.HymMediaController
         android:id="@+id/media_controller"
         android:layout_width="fill_parent"
