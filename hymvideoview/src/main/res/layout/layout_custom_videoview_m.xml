@@ -18,21 +18,21 @@
         android:id="@+id/hv_pre_img"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_gravity="center"
-        android:scaleType="fitXY"
-         />
+        android:layout_centerInParent="true"
+        android:scaleType="fitCenter" />
     <ProgressBar
         android:id="@+id/pb_play"
         style="@style/st_pro_horizontal_goddessvideo"
         android:layout_width="match_parent"
         android:layout_height="5dp"
-       android:layout_gravity="bottom"
-        android:layout_marginBottom="0dp"
+        android:layout_alignParentBottom="true"
+        android:layout_marginBottom="5dp"
         android:visibility="gone" />
     <com.hym.hymvideoview.HymMediaController
         android:id="@+id/media_controller"
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"
-        app:hv_scalable="false" />
+        app:hv_scalable="false"
+        android:visibility="gone"/>
 
 </FrameLayout>

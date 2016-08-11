@@ -8,7 +8,6 @@ import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.Build;
-import android.os.Handler;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.KeyEvent;
@@ -19,9 +18,7 @@ import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.view.accessibility.AccessibilityEvent;
 import android.view.accessibility.AccessibilityNodeInfo;
-import android.widget.VideoView;
 
-import java.io.IOException;
 import java.util.Map;
 
 /**
@@ -341,7 +338,7 @@ public class HymVideoView extends SurfaceView implements  HymMediaController.Med
             // target state that was there before.
             mCurrentState = STATE_PREPARING;
             attachMediaController();
-        }catch (IOException ex){
+        }catch (Exception ex){
             Log.e(TAG, "Unable to open content: " + mUri, ex);
             mCurrentState = STATE_ERROR;
             mTargetState = STATE_ERROR;
@@ -622,7 +619,7 @@ public class HymVideoView extends SurfaceView implements  HymMediaController.Med
         }
     }
     @Override
-    public boolean onTouchEvent(MotionEvent ev) {
+    public boolean onTrackballEvent(MotionEvent ev) {
         if (isInPlaybackState() && mMediaController != null) {
             toggleMediaControlsVisibility();
         }
@@ -630,7 +627,7 @@ public class HymVideoView extends SurfaceView implements  HymMediaController.Med
     }
 
     @Override
-    public boolean onTrackballEvent(MotionEvent ev) {
+    public boolean onTouchEvent(MotionEvent ev) {
         if (isInPlaybackState() && mMediaController != null) {
             toggleMediaControlsVisibility();
         }
@@ -695,6 +692,7 @@ public class HymVideoView extends SurfaceView implements  HymMediaController.Med
         if (!mPreparedBeforeStart && mMediaController != null) {
             mMediaController.showLoading();
         }else{
+            if(mMediaController!=null)
             mMediaController.hideComplete();
         }
         if (isInPlaybackState()) {

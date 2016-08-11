@@ -1,11 +1,12 @@
 package com.hym.hymvideoview;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.res.TypedArray;
+import android.graphics.Color;
 import android.os.Handler;
 import android.os.Message;
 import android.util.AttributeSet;
-import android.util.Log;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
@@ -14,11 +15,9 @@ import android.view.ViewGroup;
 import android.widget.FrameLayout;
 import android.widget.ImageButton;
 import android.widget.ImageView;
-import android.widget.MediaController;
 import android.widget.ProgressBar;
 import android.widget.SeekBar;
 import android.widget.TextView;
-import android.widget.VideoView;
 
 import com.flyup.common.utils.LogUtil;
 
@@ -49,6 +48,7 @@ public class HymMediaController extends FrameLayout {
 
     private TextView mTitle;
 
+    /**只标示底部的控制器是否是显示状态*/
     private boolean mShowing = true;
 
     private boolean mDragging;
@@ -93,15 +93,21 @@ public class HymMediaController extends FrameLayout {
     private ViewGroup errorLayout;
 
     private View mTitleLayout;
+    /**底部的控制布局*/
     private View mControlLayout;
+    /**控制器底部控制条是否显示开关属性*/
+    private Boolean noBottomController=false;
 
     private View mCenterPlayButton;
+    private View rootView;
+    private TextView tvReplay;
+    /**点击屏幕的时候，关闭当前全屏页面，目前全屏页面是使用activity去写的*/
+    private boolean touchFinishSwitcher=false;
 
     public HymMediaController(Context context) {
         super(context);
         mContext = context;
         init(context);
-
     }
 
     public HymMediaController(Context context, AttributeSet attrs) {
@@ -134,13 +140,16 @@ public class HymMediaController extends FrameLayout {
         errorLayout.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
-                mPlayer.start();
+                startVideo();
             }
         });
         mTurnButton = (ImageButton) v.findViewById(R.id.turn_button);
         mScaleButton = (ImageButton) v.findViewById(R.id.scale_button);
         mCenterPlayButton = v.findViewById(R.id.center_play_btn);
         mBackButton = v.findViewById(R.id.back_btn);
+        rootView=v.findViewById(R.id.root_view);
+        tvReplay=(TextView) v.findViewById(R.id.tv_replay);
+        tvReplay.setOnClickListener(mCenterPlayListener);
 
         if (mTurnButton != null) {
             mTurnButton.requestFocus();
@@ -183,6 +192,18 @@ public class HymMediaController extends FrameLayout {
         mFormatter = new Formatter(mFormatBuilder, Locale.getDefault());
     }
 
+    /**
+     * 设置播放器点击屏幕关闭等相关需求，用于全屏页面
+     * @param switcher
+     */
+    public void setTouchFinishSwitcher(boolean switcher){
+        touchFinishSwitcher=switcher;
+    }
+    /**设置是否有底部播放控制条的属性*/
+    public void setNoBottomController(Boolean noBottom){
+        noBottomController=noBottom;
+        mControlLayout.setVisibility(View.GONE);
+    }
 
     //播放组件实现此接口，并得到实现此接口播放组件的引用
     public void setMediaPlayer(MediaPlayerControl player) {
@@ -220,8 +241,9 @@ public class HymMediaController extends FrameLayout {
      * @param timeout timeout 不为0的时候，到timeout的时间，会自动隐藏；为0的时候，一直显示到主动调用hide()方法，隐藏
      */
     public void show(int timeout) {
+        LogUtil.e("video_hide", "show()....");
         if (!mShowing) {
-            setProgress();
+            //setProgress();
             if (mTurnButton != null) {
                 mTurnButton.requestFocus();
             }
@@ -238,9 +260,12 @@ public class HymMediaController extends FrameLayout {
             mTitleLayout.setVisibility(VISIBLE);
         }
         if (mControlLayout.getVisibility() != VISIBLE) {
-            mControlLayout.setVisibility(VISIBLE);
+            if (noBottomController) {
+                mControlLayout.setVisibility(GONE);
+            } else {
+                mControlLayout.setVisibility(VISIBLE);
+            }
         }
-        LogUtil.e("video_hide", "show().by.center..");
         //视频加载完成过后，重新加载，没有状态同步
         if (mPlayer != null && mPlayer.isPlaying()) {
             setCenterPlayBtnImgSourceAndTag(R.mipmap.hv_stop_btn);
@@ -250,13 +275,16 @@ public class HymMediaController extends FrameLayout {
         // cause the progress bar to be updated even if mShowing
         // was already true. This happens, for example, if we're
         // paused with the progress bar showing the user hits play.
-        mHandler.sendEmptyMessage(SHOW_PROGRESS);
+        //mHandler.sendEmptyMessage(SHOW_PROGRESS);
 
         Message msg = mHandler.obtainMessage(FADE_OUT);
-        if (timeout != 0) {
-            mHandler.removeMessages(FADE_OUT);
-            mHandler.sendMessageDelayed(msg, timeout);
+        if(!touchFinishSwitcher){
+            if (timeout != 0) {
+                mHandler.removeMessages(FADE_OUT);
+                mHandler.sendMessageDelayed(msg, timeout);
+           }
         }
+
     }
 
     public boolean isShowing() {
@@ -270,10 +298,12 @@ public class HymMediaController extends FrameLayout {
     public void hide() {
         LogUtil.e("video_hide", "hide()....");
         if (mShowing) {
-            mHandler.removeMessages(SHOW_PROGRESS);
+            //mHandler.removeMessages(SHOW_PROGRESS);
             mTitleLayout.setVisibility(GONE);
             //底部控制条隐藏
-            mControlLayout.setVisibility(GONE);
+            if(!touchFinishSwitcher){
+                mControlLayout.setVisibility(GONE);
+            }
             //只有在播放状态的时候，底部按钮和中间按钮会同步显示和隐藏
             if (mPlayer != null && mPlayer.isPlaying()) {
                 LogUtil.e("video_hide","hide() center...");
@@ -295,19 +325,24 @@ public class HymMediaController extends FrameLayout {
                 //显示进度条 ok
                 case SHOW_PROGRESS: //2
                     pos = setProgress();
-                    if (!mDragging && mShowing && mPlayer != null && mPlayer.isPlaying()) {
+                    if (!mDragging&& mPlayer != null && mPlayer.isPlaying()) {
                         msg = obtainMessage(SHOW_PROGRESS);
                         sendMessageDelayed(msg, 1000 - (pos % 1000));
                     }
                     break;
                 case SHOW_LOADING: //3
-                    show();
+                    //show();
                     showCenterView(R.id.loading_layout);
                     break;
                 //显示重播按钮，ok
                 case SHOW_COMPLETE: //7
-                    setCenterPlayBtnImgSourceAndTag(R.mipmap.hv_itv_replay);
-                    showCenterView(R.id.center_play_btn);
+                    if (!touchFinishSwitcher) {
+                        setCenterPlayBtnImgSourceAndTag(R.mipmap.hv_itv_replay);
+                        showCenterView(R.id.center_play_btn);
+                        tvReplay.setVisibility(View.VISIBLE);
+                        rootView.setBackgroundColor(Color.parseColor("#4c000000"));
+                    }
+                    updatePausePlay();
                     break;
                 case SHOW_ERROR: //5
                     show(0);
@@ -317,13 +352,15 @@ public class HymMediaController extends FrameLayout {
                     hide();
                     LogUtil.e("videoTest_center_HIDE_LOADING:", "do hide center view");
                     setCenterPlayBtnImgSourceAndTag(R.mipmap.hv_stop_btn);
-                    lastCenterShowID=R.id.center_play_btn;
+                    lastCenterShowID= R.id.center_play_btn;
                     hideCenterView();
                     break;
                 case HIDE_LOADING_SHOW_PLAY://9
                     hide();
                     LogUtil.e("videoTest_center_HIDE_LOADING_SHOW_PLAY:", "do hide center view");
                     showCenterView(R.id.center_play_btn);
+                    updatePausePlay();
+                    setProgressInfo();
                     break;
                 case HIDE_ERROR: //6
                     hide();
@@ -353,6 +390,9 @@ public class HymMediaController extends FrameLayout {
                 errorLayout.setVisibility(GONE);
             }
         } else if (resId == R.id.center_play_btn) {
+            if(touchFinishSwitcher){
+                return;
+            }
             if (mCenterPlayButton.getVisibility() != VISIBLE) {
                 mCenterPlayButton.setVisibility(VISIBLE);
             }
@@ -439,34 +479,20 @@ public class HymMediaController extends FrameLayout {
         return position;
     }
 
-    @Override
-    public boolean onTouchEvent(MotionEvent event) {
-        switch (event.getAction()) {
-            case MotionEvent.ACTION_DOWN:
-                show(0); // show until hide is called
-                handled = false;
-                break;
-            case MotionEvent.ACTION_UP:
-                if (!handled) {
-                    handled = false;
-                    show(sDefaultTimeout); // start timeout
-                }
-                break;
-            case MotionEvent.ACTION_CANCEL:
-                hide();
-                break;
-            default:
-                break;
-        }
-        return true;
-    }
 
+    //mTouchListener 是设置在rootView上，先接受事件，OnTouchEvent 是在此自定义控件上，可以理解成最顶层layout，后接受事件
     boolean handled = false;
     //如果正在显示,则使之消失
     private OnTouchListener mTouchListener = new OnTouchListener() {
         public boolean onTouch(View v, MotionEvent event) {
+            if(touchFinishSwitcher&&mContext instanceof Activity){
+                ((Activity)mContext).finish();
+                return true;
+            }
+            LogUtil.e("rootView","mTouchListener");
             if (event.getAction() == MotionEvent.ACTION_DOWN) {
                 if (mShowing) {
+                    LogUtil.e("rootView","mTouchListener"+mShowing);
                     hide();
                     handled = true;
                     return true;
@@ -475,6 +501,33 @@ public class HymMediaController extends FrameLayout {
             return false;
         }
     };
+    @Override
+    public boolean onTouchEvent(MotionEvent event) {
+        switch (event.getAction()) {
+            case MotionEvent.ACTION_DOWN:
+                LogUtil.e("rootView","onTouchEvent_down"+handled);
+                handled = false;
+
+
+                break;
+            case MotionEvent.ACTION_UP:
+                LogUtil.e("rootView","onTouchEvent_up"+handled);
+                if (!handled) {
+                    handled = false;
+                    show(sDefaultTimeout); // start timeout
+                }
+                break;
+            case MotionEvent.ACTION_CANCEL:
+                LogUtil.e("rootView","onTouchEvent_cancel"+handled);
+                hide();
+                break;
+            default:
+                break;
+        }
+        return true;
+    }
+
+
 
     @Override
     public boolean onTrackballEvent(MotionEvent ev) {
@@ -500,7 +553,7 @@ public class HymMediaController extends FrameLayout {
             return true;
         } else if (keyCode == KeyEvent.KEYCODE_MEDIA_PLAY) {
             if (uniqueDown && !mPlayer.isPlaying()) {
-                mPlayer.start();
+                startVideo();
                 updatePausePlay();
                 show(sDefaultTimeout);
             }
@@ -530,8 +583,14 @@ public class HymMediaController extends FrameLayout {
         return super.dispatchKeyEvent(event);
     }
 
-    private View.OnClickListener mPauseListener = new View.OnClickListener() {
+    private void startVideo() {
+        mPlayer.start();
+        setProgressInfo();
+    }
+
+    private OnClickListener mPauseListener = new OnClickListener() {
         public void onClick(View v) {
+            tvReplay.setVisibility(View.GONE);
             if (mPlayer != null) {
                 doPauseResume();
                 show(sDefaultTimeout);
@@ -539,7 +598,7 @@ public class HymMediaController extends FrameLayout {
         }
     };
 
-    private View.OnClickListener mScaleListener = new View.OnClickListener() {
+    private OnClickListener mScaleListener = new OnClickListener() {
         public void onClick(View v) {
             mIsFullScreen = !mIsFullScreen;
             updateScaleButton();
@@ -550,7 +609,7 @@ public class HymMediaController extends FrameLayout {
     };
 
     //仅全屏时才有返回按钮
-    private View.OnClickListener mBackListener = new View.OnClickListener() {
+    private OnClickListener mBackListener = new OnClickListener() {
         public void onClick(View v) {
             if (mIsFullScreen) {
                 mIsFullScreen = false;
@@ -562,11 +621,13 @@ public class HymMediaController extends FrameLayout {
         }
     };
 
-    public View.OnClickListener mCenterPlayListener = new View.OnClickListener() {
+    public OnClickListener mCenterPlayListener = new OnClickListener() {
         public void onClick(View v) {
             if (mPlayer == null) {
                 return;
             }
+
+            //
             hideCenterView();
             if (mPlayer.isPlaying()) {
                 setCenterPlayBtnImgSourceAndTag(R.mipmap.hv_itv_player_play);
@@ -575,22 +636,30 @@ public class HymMediaController extends FrameLayout {
                 updatePausePlay();
                 return;
             }
-            mPlayer.start();
+            startVideo();
+            rootView.setBackgroundColor(Color.parseColor("#00000000"));
+            tvReplay.setVisibility(View.GONE);
             setCenterPlayBtnImgSourceAndTag(R.mipmap.hv_stop_btn);
             updatePausePlay();
         }
     };
 
+    private void setProgressInfo() {
+        setProgress();
+        mHandler.sendEmptyMessage(SHOW_PROGRESS);
+    }
+
+
     private void updatePausePlay() {
         if (mPlayer != null && mPlayer.isPlaying()) {
-            mTurnButton.setImageResource(R.mipmap.hv_stop_btn);
+            mTurnButton.setImageResource(R.mipmap.hv_turn_stop_btn);
             //如果是重播状态，不同步
             if (mCenterPlayButton.getTag() != null && !(R.mipmap.hv_itv_replay + "").equals(mCenterPlayButton.getTag().toString()))
                 setCenterPlayBtnImgSourceAndTag(R.mipmap.hv_stop_btn);
         } else {
             mTurnButton.setImageResource(R.mipmap.hv_player_player_btn);
             if (mCenterPlayButton.getTag() != null && !(R.mipmap.hv_itv_replay + "").equals(mCenterPlayButton.getTag().toString()))
-                setCenterPlayBtnImgSourceAndTag(R.mipmap.hv_player_player_btn);
+                setCenterPlayBtnImgSourceAndTag(R.mipmap.hv_itv_player_play);
         }
     }
 
@@ -627,7 +696,7 @@ public class HymMediaController extends FrameLayout {
             setCenterPlayBtnImgSourceAndTag(R.mipmap.hv_itv_player_play);
         } else {
             setCenterPlayBtnImgSourceAndTag(R.mipmap.hv_stop_btn);
-            mPlayer.start();
+            startVideo();
         }
         updatePausePlay();
     }
@@ -758,7 +827,7 @@ public class HymMediaController extends FrameLayout {
         loadingLayout.addView(onLoadingView);
     }
 
-    public void setOnErrorViewClick(View.OnClickListener onClickListener) {
+    public void setOnErrorViewClick(OnClickListener onClickListener) {
         errorLayout.setOnClickListener(onClickListener);
     }
 

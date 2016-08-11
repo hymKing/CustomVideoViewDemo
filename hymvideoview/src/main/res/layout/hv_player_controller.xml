@@ -2,6 +2,7 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
+    android:id="@+id/root_view"
     android:background="@android:color/transparent">
     <!--android:background="@color/hv_black"-->
     <LinearLayout
@@ -63,7 +64,11 @@
             android:visibility="gone"/>
 
     </LinearLayout>
-
+<LinearLayout
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:layout_centerInParent="true"
+    android:orientation="vertical">
     <ImageView
         android:id="@+id/center_play_btn"
         android:layout_width="wrap_content"
@@ -73,11 +78,20 @@
         android:scaleType="fitXY"
         android:src="@mipmap/hv_itv_player_play"
         android:visibility="visible" />
-
+    <TextView
+        android:id="@+id/tv_replay"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:layout_gravity="center_horizontal"
+        android:text="重播"
+        android:textColor="#e5ffffff"
+        android:visibility="gone"/>
+</LinearLayout>
     <RelativeLayout
         android:id="@+id/control_layout"
         android:layout_width="fill_parent"
-        android:layout_height="50dp"
+        android:layout_height="40dp"
         android:layout_alignParentBottom="true"
         android:background="@color/hv_titlebar_bg"
         android:gravity="center_vertical">

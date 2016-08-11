@@ -1,6 +1,7 @@
 package com.hym.customvideoviewdemo;
 
 import android.app.Activity;
+import android.content.res.AssetFileDescriptor;
 import android.graphics.PixelFormat;
 import android.media.MediaPlayer;
 import android.os.Bundle;
@@ -15,6 +16,8 @@ import com.flyup.net.image.ImageLoader;
 import com.hym.hymvideoview.CustomVideoView;
 import com.hym.hymvideoview.HymMediaController;
 import com.hym.hymvideoview.HymVideoView;
+
+import java.io.IOException;
 
 
 public class SigleTestActivity extends Activity implements OnClickListener,CustomVideoView.ExtendVideoViewCallBack {
@@ -44,18 +47,25 @@ public class SigleTestActivity extends Activity implements OnClickListener,Custo
 		cvv_video.setOnExtendVideoViewCallBack(this);
 		//customVideoView=(CustomVideoView)findViewById(R.id.cvv_video_2);
 		cvv_video.setVideoFirstFrame(firstFramePath);
+//		AssetFileDescriptor descriptor = null;
+//		try {
+//			descriptor = getAssets().openFd("20.mp4");
+//		} catch (IOException e) {
+//			e.printStackTrace();
+//		}
+		cvv_video.setNoMeidaController();
 		cvv_video.setTag(testUrl);
 		cvv_video.setVideoPath(cvv_video.getTag().toString());
 		//cvv_video.start(true);
 //		cvv_video.setTag(localPath);
 //		cvv_video.setVideoPath(cvv_video.getTag().toString());
-//		cvv_video.start(true);
+		//cvv_video.start(true);
 
 	}
 	//    http://www.boomq.com/apollo/video/2016/7/5/test19_7M.mp4
 //    http://www.boomq.com/apollo/video/2016/7/5/test4_79M.mp4
 //    http://www.boomq.com/apollo/video/2016/7/5/test8_1M.mp4
-	String testUrl="http://www.boomq.com/apollo/video/2016/7/5/test4_79M.mp4";
+	String testUrl="http://www.boomq.com/apollo/video/2016/7/5/20.mp4";
 	String firstFramePath="http://www.boomq.com/resize/photo/720/770/2016/5/27/ea7881633c8d4d798ac63f7a1031110a.png";
 	String errFramePath="http://www.boomq.com/resize/photo/720/770/2016/5/27/ea7881633c8d4d798ac63f7a1031110a.pn";
 	String vedioPath="http://www.boomq.com/apollo/video/2016/5/27/310d8194db424342a0a2fed472929d4a.mp4";

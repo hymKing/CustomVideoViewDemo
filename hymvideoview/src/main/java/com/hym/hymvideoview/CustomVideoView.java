@@ -14,6 +14,7 @@ import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.Toast;
 
+import com.flyup.common.utils.LogUtil;
 import com.flyup.download.DownloadInfo;
 import com.flyup.download.DownloadManager;
 import com.flyup.download.DownloadState;
@@ -55,12 +56,16 @@ import com.flyup.net.image.ImageLoader;
  * <br>修复预览图拉升问题
  * <br>添加点击屏幕暂停的方法
  * <p/>
- *
+ * <p/>
+ * add by Hym on 2016/07/30
+ * 添加了无底部的控制条逻辑
  */
 //TODO:需要修复根据网络状况，是否自动缓冲
+//TODO:需要监听重播按钮的点击  edit by menglei===>Done(实现setOnExtentCallBack接口)
+//TODO:需要隐藏进度条 edit by zhouguanghong ====>Done
 
 
-public class CustomVideoView extends LinearLayout implements  HymVideoView.VideoViewCallback{
+public class CustomVideoView extends LinearLayout implements HymVideoView.VideoViewCallback {
     private boolean debug = true;
     private Context mContext;
     HymVideoView hvVideo;
@@ -69,7 +74,9 @@ public class CustomVideoView extends LinearLayout implements  HymVideoView.Video
     ImageView errImgBg;
     HymMediaController mMediaController;
     int currentTime = 0;
-    /**视频播放源的路径*/
+    /**
+     * 视频播放源的路径
+     */
     String mPath;
     /**
      * 默认拦截事件
@@ -85,15 +92,20 @@ public class CustomVideoView extends LinearLayout implements  HymVideoView.Video
     Runnable runnable = new Runnable() {
         public void run() {
             int duration = hvVideo.getCurrentPosition();
-            pbplay.setMax(hvVideo.getDuration());
             pbplay.setProgress(duration);
-            //LogUtil.e("VideoTest", "duration:" + duration + "");
-            currentTime += 100;
-            if (currentTime > interceptTime && mVICallBack != null) {
+            pbplay.setMax(hvVideo.getDuration());
+            //处理黑屏问题
+            if (duration > 300) {
+                setPreImgVisibility(View.GONE);
+            }
+            //LogUtil.e("VideoTest", "duration:" + duration + "I->"+hvVideo.getDuration()+"CT->"+currentTime);
+            if (duration > interceptTime && mVICallBack != null) {
                 hvVideo.pause();
                 mVICallBack.onIntercept();
             } else {
-                handler.postDelayed(runnable, 100);
+
+                if (hvVideo.isPlaying())
+                    handler.postDelayed(runnable, 100);
             }
         }
     };
@@ -108,19 +120,44 @@ public class CustomVideoView extends LinearLayout implements  HymVideoView.Video
         init(context);
     }
 
-    private void init(Context context) {
+    private void init(final Context context) {
         LayoutInflater.from(context).inflate(R.layout.layout_custom_videoview_m, this, true);
         mContext = context;
         hvVideo = (HymVideoView) findViewById(R.id.hv_video);
         preHvImg = (ImageView) findViewById(R.id.hv_pre_img);
         pbplay = (ProgressBar) findViewById(R.id.pb_play);
         mMediaController = (HymMediaController) findViewById(R.id.media_controller);
-        errImgBg=(ImageView) mMediaController.findViewById(R.id.error_img_bg);
+        mMediaController.setVisibility(View.VISIBLE);
+        errImgBg = (ImageView) mMediaController.findViewById(R.id.error_img_bg);
         hvVideo.setMediaController(mMediaController);
         initCVV();
     }
 
     boolean preparedFlag = false;
+
+    /**
+     * 点击屏幕的时候，关闭当前全屏页面，目前全屏页面是使用activity去写的
+     */
+    public void setTouchFinishSwitcher(boolean switcher) {
+        mMediaController.setTouchFinishSwitcher(switcher);
+    }
+
+    /**
+     * 设置是否需要控制器
+     */
+    public void setNoMeidaController() {
+        hvVideo.setMediaController(null);
+        mMediaController.setVisibility(View.GONE);
+    }
+
+    /**
+     * 设置控制器无底部控制条
+     *
+     * @param noBottom true  没有底部控制条
+     */
+    public void setNoBottomController(Boolean noBottom) {
+        mMediaController.setNoBottomController(noBottom);
+    }
 
     /**
      * 初始化播放，进度条等相关逻辑
@@ -135,11 +172,11 @@ public class CustomVideoView extends LinearLayout implements  HymVideoView.Video
                 if (pbplay != null) {
                     pbplay.setMax(maxPosition);
                 }
-                currentTime=0;
+                currentTime = 0;
                 setPbProgressVisibility(View.GONE);
                 preparedFlag = true;
                 if (debug)
-                    Log.e("VideoTest", "onPrapared:maxPosition"+maxPosition);
+                    Log.e("VideoTest", "onPrapared:maxPosition" + maxPosition);
             }
         });
         hvVideo.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
@@ -150,7 +187,7 @@ public class CustomVideoView extends LinearLayout implements  HymVideoView.Video
                 currentTime = 0;
                 setPbProgressVisibility(View.GONE);
                 if (debug)
-                    Log.e("VideoTest", "onCompleted:position"+hvVideo.getCurrentPosition());
+                    Log.e("VideoTest", "onCompleted:position" + hvVideo.getCurrentPosition());
                 preHvImg.setVisibility(VISIBLE);
             }
         });
@@ -168,15 +205,20 @@ public class CustomVideoView extends LinearLayout implements  HymVideoView.Video
 
 
     int mCurrentPosition = 0;
+    int lastPauseDuration = 0;
+    boolean lastPlayingState = false;
 
     /**
      * activity的 onPause方法中调用，保存当前视频播放的状态
      */
     public void onActivityOnPause() {
-        mCurrentPosition =hvVideo.getmCurrentState()== HymVideoView.STATE_PLAYBACK_COMPLETED
-                ?hvVideo.getDuration():hvVideo.getCurrentPosition();
+        mCurrentPosition = hvVideo.getmCurrentState() == HymVideoView.STATE_PLAYBACK_COMPLETED
+                ? hvVideo.getDuration() : hvVideo.getCurrentPosition();
         if (debug)
-        Log.e("VideoTest", "onActivityOnPause:position"+mCurrentPosition);
+            Log.e("VideoTest", "onActivityOnPause:position" + mCurrentPosition);
+        lastPauseDuration = hvVideo.getDuration();
+        lastPlayingState = hvVideo.isPlaying();
+        pause();
     }
 
     /**
@@ -184,11 +226,15 @@ public class CustomVideoView extends LinearLayout implements  HymVideoView.Video
      */
     public void onActivityOnRestart() {
         setPreImgVisibility(VISIBLE);
+        Log.e("VideoTest", "setPreImgVisibility:position" + mCurrentPosition);
         try {
             if (hvVideo != null) {
-                if (mCurrentPosition != 0&&mCurrentPosition!=hvVideo.getDuration()) {
+                if (mCurrentPosition != 0 && mCurrentPosition != lastPauseDuration) {
+                    Log.e("VideoTest", "setPreImgVisibility:duration" + hvVideo.getDuration());
                     hvVideo.seekTo(mCurrentPosition);
-                    hvVideo.start();
+                    if (lastPlayingState) {
+                        hvVideo.start();
+                    }
                     mCurrentPosition = 0;
                 }
             }
@@ -197,7 +243,7 @@ public class CustomVideoView extends LinearLayout implements  HymVideoView.Video
         }
     }
 
-    public void showCenterLoading(){
+    public void showCenterLoading() {
         mMediaController.showLoading();
     }
 
@@ -220,26 +266,30 @@ public class CustomVideoView extends LinearLayout implements  HymVideoView.Video
      * @param visibility
      */
     private void setPreImgVisibility(int visibility) {
-        preHvImg.setVisibility(visibility);
+        if (preHvImg.getVisibility() != visibility)
+            preHvImg.setVisibility(visibility);
     }
 
 
     /**
      * 设置底部独立进度条的显示状态的前置条件
+     *
      * @param pbDisplayPreSetting
      */
     public void setPbDisplayPreSetting(boolean pbDisplayPreSetting) {
         this.pbDisplayPreSetting = pbDisplayPreSetting;
     }
 
-    private boolean pbDisplayPreSetting=false;
+    private boolean pbDisplayPreSetting = false;
+
     /**
      * 设置进度条的显示和隐藏
+     *
      * @param visibility
      */
-    public void setPbProgressVisibility(int visibility){
-        if(pbDisplayPreSetting)
-        pbplay.setVisibility(visibility);
+    public void setPbProgressVisibility(int visibility) {
+        if (pbDisplayPreSetting)
+            pbplay.setVisibility(visibility);
     }
 
     /**
@@ -253,14 +303,12 @@ public class CustomVideoView extends LinearLayout implements  HymVideoView.Video
     }
 
     /**
-     *
-     *
      * @param firstFrameUrl
      */
     public void setVideoFirstFrame(String firstFrameUrl) {
         if (!TextUtils.isEmpty(firstFrameUrl)) {
             ImageLoader.load(preHvImg, firstFrameUrl);
-            ImageLoader.load(errImgBg,firstFrameUrl);
+            ImageLoader.load(errImgBg, firstFrameUrl);
         }
 
     }
@@ -313,7 +361,7 @@ public class CustomVideoView extends LinearLayout implements  HymVideoView.Video
      */
     public void start(Boolean ensureNetType) {
         //添加wifi网络判断
-        if(ensureNetType&&!"wifi".equals(HttpUtil.getNetworkType(mContext))){
+        if (ensureNetType && !"wifi".equals(HttpUtil.getNetworkType(mContext))) {
             return;
         }
         hvVideo.start();
@@ -329,6 +377,7 @@ public class CustomVideoView extends LinearLayout implements  HymVideoView.Video
 
     /**
      * 设置视频准备完成的回调
+     *
      * @param l
      */
     public void setOnPreparedListener(MediaPlayer.OnPreparedListener l) {
@@ -337,6 +386,7 @@ public class CustomVideoView extends LinearLayout implements  HymVideoView.Video
 
     /**
      * 设置视频被播放完成的回调
+     *
      * @param l
      */
     public void setOnCompletionListener(MediaPlayer.OnCompletionListener l) {
@@ -356,14 +406,17 @@ public class CustomVideoView extends LinearLayout implements  HymVideoView.Video
      * 视频操作过程中的相关回调的全局变量
      */
     public VideoInterceptCallBack mVICallBack;
+
     /**
      * 视频拦截回调接口
      */
     public interface VideoInterceptCallBack {
         void onIntercept();
     }
+
     /**
      * 设置视频过程中的相关回调
+     *
      * @param callBack
      */
     public void setOnVideoInterceptCallBack(VideoInterceptCallBack callBack) {
@@ -373,6 +426,7 @@ public class CustomVideoView extends LinearLayout implements  HymVideoView.Video
 
     /**
      * 设置视频过程中的相关回调,定制拦截事件
+     *
      * @param callBack
      */
     public void setOnVideoInterceptCallBack(VideoInterceptCallBack callBack, int interceptTime) {
@@ -381,29 +435,37 @@ public class CustomVideoView extends LinearLayout implements  HymVideoView.Video
     }
 
 
-
     private ExtendVideoViewCallBack mExtendVideoViewCallBack;
-    /**设置外部组件的回调接口，比如在activity中，要获得，播放开始，停止，全屏等的变化状态。*/
-    public interface ExtendVideoViewCallBack{
+
+    /**
+     * 设置外部组件的回调接口，比如在activity中，要获得，播放开始，停止，全屏等的变化状态。
+     */
+    public interface ExtendVideoViewCallBack {
         void onScaleChange(boolean isFullscreen);
+
         void onPause(final MediaPlayer mediaPlayer);
+
         void onStart(final MediaPlayer mediaPlayer);
+
         void onBufferingStart(final MediaPlayer mediaPlayer);
+
         void onBufferingEnd(final MediaPlayer mediaPlayer);
     }
-    public void setOnExtendVideoViewCallBack(ExtendVideoViewCallBack extendVideoViewCallBack){
-        mExtendVideoViewCallBack=extendVideoViewCallBack;
+
+    public void setOnExtendVideoViewCallBack(ExtendVideoViewCallBack extendVideoViewCallBack) {
+        mExtendVideoViewCallBack = extendVideoViewCallBack;
     }
+
     @Override
     public void onScaleChange(boolean isFullscreen) {
-        if(mExtendVideoViewCallBack!=null){
+        if (mExtendVideoViewCallBack != null) {
             mExtendVideoViewCallBack.onScaleChange(isFullscreen);
         }
     }
 
     @Override
     public void onPause(MediaPlayer mediaPlayer) {
-        if(mExtendVideoViewCallBack!=null){
+        if (mExtendVideoViewCallBack != null) {
             mExtendVideoViewCallBack.onPause(mediaPlayer);
         }
     }
@@ -412,23 +474,31 @@ public class CustomVideoView extends LinearLayout implements  HymVideoView.Video
     public void onStart(MediaPlayer mediaPlayer) {
         setPbProgressVisibility(View.VISIBLE);
         handler.postDelayed(runnable, 0);
-        setPreImgVisibility(View.GONE);
-        if(mExtendVideoViewCallBack!=null){
+        LogUtil.e("VideoTest_onstart", "================" + hvVideo.getCurrentPosition());
+        if (mExtendVideoViewCallBack != null) {
             mExtendVideoViewCallBack.onStart(mediaPlayer);
         }
     }
 
     @Override
     public void onBufferingStart(MediaPlayer mediaPlayer) {
-        if(mExtendVideoViewCallBack!=null){
+        if (mExtendVideoViewCallBack != null) {
             mExtendVideoViewCallBack.onBufferingStart(mediaPlayer);
         }
+        LogUtil.e("VideoTest_onbufferstart", "================" + hvVideo.getCurrentPosition());
     }
 
     @Override
     public void onBufferingEnd(MediaPlayer mediaPlayer) {
-        if(mExtendVideoViewCallBack!=null){
+        if (mExtendVideoViewCallBack != null) {
             mExtendVideoViewCallBack.onBufferingEnd(mediaPlayer);
         }
+//        handler.postDelayed(new Runnable() {
+//            @Override
+//            public void run() {
+        //setPreImgVisibility(View.GONE);
+//            }
+//        },15000);
+        LogUtil.e("VideoTest_onbufferend", "================" + hvVideo.getCurrentPosition());
     }
 }
