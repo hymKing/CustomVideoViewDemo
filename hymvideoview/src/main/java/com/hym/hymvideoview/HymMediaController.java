@@ -7,6 +7,7 @@ import android.graphics.Color;
 import android.os.Handler;
 import android.os.Message;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
@@ -18,9 +19,6 @@ import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.SeekBar;
 import android.widget.TextView;
-
-import com.flyup.common.utils.LogUtil;
-
 import java.util.Formatter;
 import java.util.Locale;
 
@@ -241,7 +239,7 @@ public class HymMediaController extends FrameLayout {
      * @param timeout timeout 不为0的时候，到timeout的时间，会自动隐藏；为0的时候，一直显示到主动调用hide()方法，隐藏
      */
     public void show(int timeout) {
-        LogUtil.e("video_hide", "show()....");
+        Log.e("video_hide", "show()....");
         if (!mShowing) {
             //setProgress();
             if (mTurnButton != null) {
@@ -296,7 +294,7 @@ public class HymMediaController extends FrameLayout {
      * 同时负责底部按钮和中间的按钮的显示和隐藏
      */
     public void hide() {
-        LogUtil.e("video_hide", "hide()....");
+        Log.e("video_hide", "hide()....");
         if (mShowing) {
             //mHandler.removeMessages(SHOW_PROGRESS);
             mTitleLayout.setVisibility(GONE);
@@ -306,7 +304,7 @@ public class HymMediaController extends FrameLayout {
             }
             //只有在播放状态的时候，底部按钮和中间按钮会同步显示和隐藏
             if (mPlayer != null && mPlayer.isPlaying()) {
-                LogUtil.e("video_hide","hide() center...");
+                Log.e("video_hide","hide() center...");
                 hideCenterView();
             }
             mShowing = false;
@@ -350,14 +348,14 @@ public class HymMediaController extends FrameLayout {
                     break;
                 case HIDE_LOADING: //4 缓冲完成进入播放状态的时候调用
                     hide();
-                    LogUtil.e("videoTest_center_HIDE_LOADING:", "do hide center view");
+                    Log.e("videoTest:", "_center_HIDE_LOADING do hide center view");
                     setCenterPlayBtnImgSourceAndTag(R.mipmap.hv_stop_btn);
                     lastCenterShowID= R.id.center_play_btn;
                     hideCenterView();
                     break;
                 case HIDE_LOADING_SHOW_PLAY://9
                     hide();
-                    LogUtil.e("videoTest_center_HIDE_LOADING_SHOW_PLAY:", "do hide center view");
+                    Log.e("videoTest:", "_center_HIDE_LOADING_SHOW_PLAY do hide center view");
                     showCenterView(R.id.center_play_btn);
                     updatePausePlay();
                     setProgressInfo();
@@ -367,7 +365,7 @@ public class HymMediaController extends FrameLayout {
                     showCenterView(R.id.center_play_btn);
                     break;
                 case HIDE_COMPLETE: //8
-                    LogUtil.e("videoTest_center_HIDE_COMPLETE:", "do hide center view");
+                    Log.e("videoTest:", "_center_HIDE_COMPLETE do hide center view");
                     hideCenterView();
             }
         }
@@ -377,7 +375,7 @@ public class HymMediaController extends FrameLayout {
     private int lastCenterShowID = R.id.center_play_btn;
 
     private void showCenterView(int resId) {
-        LogUtil.e("videoTest_center:", "do show center view");
+        Log.e("videoTest_center:", "do show center view");
         lastCenterShowID = resId;
         if (resId == R.id.loading_layout) {
             if (loadingLayout.getVisibility() != VISIBLE) {
@@ -419,7 +417,7 @@ public class HymMediaController extends FrameLayout {
 
 
     private void hideCenterView() {
-        LogUtil.e("videoTest_center:", "do hide center view");
+        Log.e("videoTest_center:", "do hide center view");
         if (mCenterPlayButton.getVisibility() == VISIBLE) {
             mCenterPlayButton.setVisibility(GONE);
         }
@@ -489,10 +487,10 @@ public class HymMediaController extends FrameLayout {
                 ((Activity)mContext).finish();
                 return true;
             }
-            LogUtil.e("rootView","mTouchListener");
+            Log.e("rootView","mTouchListener");
             if (event.getAction() == MotionEvent.ACTION_DOWN) {
                 if (mShowing) {
-                    LogUtil.e("rootView","mTouchListener"+mShowing);
+                    Log.e("rootView","mTouchListener"+mShowing);
                     hide();
                     handled = true;
                     return true;
@@ -505,20 +503,20 @@ public class HymMediaController extends FrameLayout {
     public boolean onTouchEvent(MotionEvent event) {
         switch (event.getAction()) {
             case MotionEvent.ACTION_DOWN:
-                LogUtil.e("rootView","onTouchEvent_down"+handled);
+                Log.e("rootView","onTouchEvent_down"+handled);
                 handled = false;
 
 
                 break;
             case MotionEvent.ACTION_UP:
-                LogUtil.e("rootView","onTouchEvent_up"+handled);
+                Log.e("rootView","onTouchEvent_up"+handled);
                 if (!handled) {
                     handled = false;
                     show(sDefaultTimeout); // start timeout
                 }
                 break;
             case MotionEvent.ACTION_CANCEL:
-                LogUtil.e("rootView","onTouchEvent_cancel"+handled);
+                Log.e("rootView","onTouchEvent_cancel"+handled);
                 hide();
                 break;
             default:

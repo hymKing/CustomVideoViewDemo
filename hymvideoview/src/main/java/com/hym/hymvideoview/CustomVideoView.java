@@ -3,7 +3,6 @@ package com.hym.hymvideoview;
 import android.content.Context;
 import android.media.MediaPlayer;
 import android.os.Handler;
-import android.os.Message;
 import android.text.TextUtils;
 import android.util.AttributeSet;
 import android.util.Log;
@@ -14,12 +13,9 @@ import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.Toast;
 
-import com.flyup.common.utils.LogUtil;
-import com.flyup.download.DownloadInfo;
-import com.flyup.download.DownloadManager;
-import com.flyup.download.DownloadState;
-import com.flyup.net.HttpUtil;
-import com.flyup.net.image.ImageLoader;
+import com.hym.hymvideoview.utils.HttpUtil;
+import com.nostra13.universalimageloader.core.ImageLoader;
+
 
 /**
  * Desc:
@@ -306,60 +302,16 @@ public class CustomVideoView extends LinearLayout implements HymVideoView.VideoV
      */
     public void setVideoFirstFrame(String firstFrameUrl) {
         if (!TextUtils.isEmpty(firstFrameUrl)) {
-            ImageLoader.load(preHvImg, firstFrameUrl);
-            ImageLoader.load(errImgBg, firstFrameUrl);
+            ImageLoader.getInstance().displayImage(firstFrameUrl,preHvImg);
+            ImageLoader.getInstance().displayImage(firstFrameUrl,errImgBg);
         }
-
-    }
-
-    //处理下载视频的处理
-    Handler myHandler = new Handler() {
-        public void handleMessage(Message msg) {
-            switch (msg.what) {
-                case 0:
-                    if (debug)
-                        Log.e("VideoTest", "下载后：uvVideo.setVideoPath(mPath)" + mPath);
-                    if (hvVideo.canPause()) {
-                        hvVideo.pause();
-                    }
-                    hvVideo.setVideoPath(mPath);
-            }
-            super.handleMessage(msg);
-        }
-    };
-
-    public void download(final String urlPath) {
-        final DownloadManager manager = DownloadManager.getInstance();
-        manager.registerObserver(new DownloadManager.DownloadObserver() {
-            @Override
-            public void onDownloadStateChanged(final DownloadInfo info) {
-                if (info.getUrl().equals(urlPath)) {
-                    switch (info.getDownloadState()) {
-                        case DownloadState.STATE_ERROR:
-                            manager.unRegisterObserver(this);
-                            break;
-                        case DownloadState.STATE_DOWNLOADED:
-                            manager.unRegisterObserver(this);
-                            mPath = info.getPath();
-                            myHandler.sendEmptyMessage(0);
-                            break;
-                    }
-                }
-            }
-
-            @Override
-            public void onDownloadProgressed(DownloadInfo info) {
-            }
-
-        });
-        manager.download(urlPath);
     }
 
     /**
      * 视频开始
      */
     public void start(Boolean ensureNetType) {
-        //添加wifi网络判断
+//        //添加wifi网络判断
         if (ensureNetType && !"wifi".equals(HttpUtil.getNetworkType(mContext))) {
             return;
         }
@@ -473,7 +425,6 @@ public class CustomVideoView extends LinearLayout implements HymVideoView.VideoV
     public void onStart(MediaPlayer mediaPlayer) {
         setPbProgressVisibility(View.VISIBLE);
         handler.postDelayed(runnable, 0);
-        LogUtil.e("VideoTest_onstart", "================" + hvVideo.getCurrentPosition());
         if (mExtendVideoViewCallBack != null) {
             mExtendVideoViewCallBack.onStart(mediaPlayer);
         }
@@ -484,7 +435,6 @@ public class CustomVideoView extends LinearLayout implements HymVideoView.VideoV
         if (mExtendVideoViewCallBack != null) {
             mExtendVideoViewCallBack.onBufferingStart(mediaPlayer);
         }
-        LogUtil.e("VideoTest_onbufferstart", "================" + hvVideo.getCurrentPosition());
     }
 
     @Override
@@ -492,12 +442,5 @@ public class CustomVideoView extends LinearLayout implements HymVideoView.VideoV
         if (mExtendVideoViewCallBack != null) {
             mExtendVideoViewCallBack.onBufferingEnd(mediaPlayer);
         }
-//        handler.postDelayed(new Runnable() {
-//            @Override
-//            public void run() {
-        //setPreImgVisibility(View.GONE);
-//            }
-//        },15000);
-        LogUtil.e("VideoTest_onbufferend", "================" + hvVideo.getCurrentPosition());
     }
 }

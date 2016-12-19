@@ -1,1 +1,1 @@
-include ':app', ':baseLib', ':hymvideoview'
+include ':app', ':hymvideoview'

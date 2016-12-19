@@ -1,6 +1,7 @@
 package com.hym.customvideoviewdemo;
 
-import com.flyup.ui.app.LibraryApplication;
+import android.app.Application;
+
 
 /**
  * Desc:
@@ -8,5 +9,5 @@ import com.flyup.ui.app.LibraryApplication;
  * Modified by
  * Modification：
  */
-public class CustomApp extends LibraryApplication {
+public class CustomApp extends Application {
 }
