@@ -60,7 +60,6 @@ import com.flyup.net.image.ImageLoader;
  * add by Hym on 2016/07/30
  * 添加了无底部的控制条逻辑
  */
-//TODO:需要修复根据网络状况，是否自动缓冲
 //TODO:需要监听重播按钮的点击  edit by menglei===>Done(实现setOnExtentCallBack接口)
 //TODO:需要隐藏进度条 edit by zhouguanghong ====>Done
 

@@ -4,8 +4,12 @@
     <modules>
       <module fileurl="file://$PROJECT_DIR$/CustomVideoViewDemo.iml" filepath="$PROJECT_DIR$/CustomVideoViewDemo.iml" />
       <module fileurl="file://$PROJECT_DIR$/HymVideoView.iml" filepath="$PROJECT_DIR$/HymVideoView.iml" />
-      <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
+      <module fileurl="file://$PROJECT_DIR$/HymVideoView.iml" filepath="$PROJECT_DIR$/HymVideoView.iml" />
       <module fileurl="file://$PROJECT_DIR$/baseLib/Library.iml" filepath="$PROJECT_DIR$/baseLib/Library.iml" />
+      <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
+      <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
+      <module fileurl="file://$PROJECT_DIR$/baseLib/baseLib.iml" filepath="$PROJECT_DIR$/baseLib/baseLib.iml" />
+      <module fileurl="file://$PROJECT_DIR$/hymvideoview/hymvideoview.iml" filepath="$PROJECT_DIR$/hymvideoview/hymvideoview.iml" />
       <module fileurl="file://$PROJECT_DIR$/hymvideoview/hymvideoview.iml" filepath="$PROJECT_DIR$/hymvideoview/hymvideoview.iml" />
     </modules>
   </component>
