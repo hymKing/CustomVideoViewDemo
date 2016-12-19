@@ -8,6 +8,7 @@ import com.hym.hymvideoview.CustomVideoView;
 
 public class FullScreenVideoAct extends Activity {
 
+
     CustomVideoView video;
     String firstFrameUrl = "";
     String videoUrl = "";

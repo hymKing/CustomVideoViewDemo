@@ -11,25 +11,17 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageView;
 
-import com.flyup.common.utils.UIUtils;
-import com.flyup.net.image.ImageLoader;
+
 import com.hym.hymvideoview.CustomVideoView;
 import com.hym.hymvideoview.HymMediaController;
-import com.hym.hymvideoview.HymVideoView;
-
-import java.io.IOException;
 
 
 public class SigleTestActivity extends Activity implements OnClickListener,CustomVideoView.ExtendVideoViewCallBack {
 	private CustomVideoView cvv_video;
 	private Button btn_set_path;
 	private Button btn_set_err_path;
-	private HymMediaController mMediaController;
-	private ImageView preImg;
 	private View mVideoLayout;
 	private View mBottomLayout;
-
-	private CustomVideoView customVideoView;
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -53,7 +45,7 @@ public class SigleTestActivity extends Activity implements OnClickListener,Custo
 //		} catch (IOException e) {
 //			e.printStackTrace();
 //		}
-		cvv_video.setNoMeidaController();
+		//cvv_video.setNoMeidaController();
 		cvv_video.setTag(testUrl);
 		cvv_video.setVideoPath(cvv_video.getTag().toString());
 		//cvv_video.start(true);
@@ -66,7 +58,8 @@ public class SigleTestActivity extends Activity implements OnClickListener,Custo
 //    http://www.boomq.com/apollo/video/2016/7/5/test4_79M.mp4
 //    http://www.boomq.com/apollo/video/2016/7/5/test8_1M.mp4
 	String testUrl="http://www.boomq.com/apollo/video/2016/7/5/20.mp4";
-	String firstFramePath="http://www.boomq.com/resize/photo/720/770/2016/5/27/ea7881633c8d4d798ac63f7a1031110a.png";
+	String firstFramePath="http://f.hiphotos.baidu.com/image/pic/item/b151f8198618367a9f738e022a738bd4b21ce573.jpg";
+    String firstFramePath2="http://www.uuipa.com/wp-content/uploads/2015/01/67b3acabe2854c73ae4525eeb65a23ab.jpg";
 	String errFramePath="http://www.boomq.com/resize/photo/720/770/2016/5/27/ea7881633c8d4d798ac63f7a1031110a.pn";
 	String vedioPath="http://www.boomq.com/apollo/video/2016/5/27/310d8194db424342a0a2fed472929d4a.mp4";
 	String vedioPath2="http://qiubeiai.com//resources/vedio/template/01.mp4";
@@ -77,7 +70,7 @@ public class SigleTestActivity extends Activity implements OnClickListener,Custo
 	public void onClick(View v) {
 		switch (v.getId()) {
 			case R.id.btn_set_path:
-				cvv_video.setVideoFirstFrame(firstFramePath);
+				cvv_video.setVideoFirstFrame(firstFramePath2);
 				cvv_video.setTag(testUrl);
 				cvv_video.setVideoPath(cvv_video.getTag().toString());
 				cvv_video.start(true);

@@ -1,6 +1,7 @@
 package com.hym.hymvideoview;
 
 import android.content.Context;
+import android.media.Image;
 import android.media.MediaPlayer;
 import android.os.Handler;
 import android.text.TextUtils;
@@ -14,6 +15,7 @@ import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import com.hym.hymvideoview.utils.HttpUtil;
+import com.nostra13.universalimageloader.core.DisplayImageOptions;
 import com.nostra13.universalimageloader.core.ImageLoader;
 
 
@@ -68,6 +70,7 @@ public class CustomVideoView extends LinearLayout implements HymVideoView.VideoV
     ProgressBar pbplay;
     ImageView errImgBg;
     HymMediaController mMediaController;
+    ImageLoader mImageLoader;
     int currentTime = 0;
     /**
      * 视频播放源的路径
@@ -125,6 +128,7 @@ public class CustomVideoView extends LinearLayout implements HymVideoView.VideoV
         mMediaController.setVisibility(View.VISIBLE);
         errImgBg = (ImageView) mMediaController.findViewById(R.id.error_img_bg);
         hvVideo.setMediaController(mMediaController);
+        mImageLoader=ImageLoader.getInstance();
         initCVV();
     }
 
@@ -302,8 +306,8 @@ public class CustomVideoView extends LinearLayout implements HymVideoView.VideoV
      */
     public void setVideoFirstFrame(String firstFrameUrl) {
         if (!TextUtils.isEmpty(firstFrameUrl)) {
-            ImageLoader.getInstance().displayImage(firstFrameUrl,preHvImg);
-            ImageLoader.getInstance().displayImage(firstFrameUrl,errImgBg);
+            mImageLoader.getInstance().displayImage(firstFrameUrl,preHvImg);
+            mImageLoader.getInstance().displayImage(firstFrameUrl,errImgBg);
         }
     }
 
